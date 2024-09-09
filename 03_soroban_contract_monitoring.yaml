@@ -1,0 +1,71 @@
+---
+- name: Monitor Soroban Smart Contract
+  hosts: localhost
+  become: true
+  vars:
+    contract_id: "CA45KN3KFTHBMSMJVFCPRUJXVNCGMR63S2QKHF7OPT7Q2EO64HWSC6JS"
+    rpc_url: "https://soroban-testnet.stellar.org"
+    network_passphrase: "Test SDF Network ; September 2015"
+    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    log_files:
+      - contract_status.log
+      - contract_start_ledger.log
+      - contract_events.log
+
+  tasks:
+    - name: Ensure required log files exist
+      file:
+        path: "{{ item }}"
+        state: touch
+      loop: "{{ log_files }}"
+
+    - name: Check contract status
+      command: >
+        soroban contract fetch --id {{ contract_id }}
+        --rpc-url {{ rpc_url }}
+        --network-passphrase "{{ network_passphrase }}"
+      register: contract_status
+
+    - name: Log contract status
+      lineinfile:
+        path: contract_status.log
+        line: "Contract Status: {{ contract_status.stdout }}"
+
+    - name: Read start ledger for contract
+      command: >
+        soroban contract read --source-account {{ source_account }}
+        --rpc-url {{ rpc_url }}
+        --network-passphrase "{{ network_passphrase }}"
+        --id {{ contract_id }}
+        --durability persistent
+      register: contract_read_output
+
+    - name: Extract start ledger information
+      set_fact:
+        start_ledger: "{{ contract_read_output.stdout.split(',')[2] }}"
+
+    - name: Log start ledger
+      lineinfile:
+        path: contract_start_ledger.log
+        line: "Start Ledger: {{ start_ledger }}"
+
+    - name: Monitor contract events
+      command: >
+        soroban events --id {{ contract_id }}
+        --rpc-url {{ rpc_url }}
+        --network-passphrase "{{ network_passphrase }}"
+        --start-ledger {{ start_ledger }}
+      register: events_output
+
+    - name: Log contract events
+      lineinfile:
+        path: contract_events.log
+        line: "Contract Events: {{ events_output.stdout }}"
+
+    - name: Display contract status
+      debug:
+        var: contract_status
+
+    - name: Display contract events
+      debug:
+        var: events_output
