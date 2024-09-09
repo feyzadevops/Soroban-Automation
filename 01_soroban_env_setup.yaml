@@ -1,0 +1,65 @@
+---
+- name: Install Stellar Soroban on Linux/macOS
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Determine OS
+      ansible.builtin.setup:
+    - name: Ensure curl is installed (Linux or macOS)
+      block:
+        - name: Install curl on macOS
+          homebrew:
+            name: curl
+            state: present
+          when: ansible_facts['os_family'] == "Darwin"
+        - name: Install curl on Linux
+          apt:
+            name: curl
+            state: present
+          when: ansible_facts['os_family'] == "Debian"
+        - name: Install curl on RedHat-based systems
+          yum:
+            name: curl
+            state: present
+          when: ansible_facts['os_family'] == "RedHat"
+      when: ansible_facts['os_family'] in ["Darwin", "Debian", "RedHat"]
+
+    - name: Install Rust
+      shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      args:
+        executable: /bin/bash
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/home/{{ ansible_user }}/.cargo/bin"
+      register: rust_install
+      notify: Log Rust installation
+
+    - name: Source cargo environment
+      shell: source /home/{{ ansible_user }}/.cargo/env
+      args:
+        executable: /bin/bash
+
+    - name: Add wasm32-unknown-unknown target
+      shell: rustup target add wasm32-unknown-unknown
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/home/{{ ansible_user }}/.cargo/bin"
+
+    - name: Install soroban-cli
+      shell: cargo install --locked soroban-cli
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/home/{{ ansible_user }}/.cargo/bin"
+
+    - name: Ensure cargo bin directory is in PATH
+      lineinfile:
+        path: /home/{{ ansible_user }}/.bashrc
+        line: 'export PATH="$PATH:/home/{{ ansible_user }}/.cargo/bin"'
+        create: yes
+
+    - name: Source bashrc to update PATH
+      shell: source /home/{{ ansible_user }}/.bashrc
+      args:
+        executable: /bin/bash
+
+  handlers:
+    - name: Log Rust installation
+      debug:
+        msg: "Rust installation finished with result: {{ rust_install }}"
