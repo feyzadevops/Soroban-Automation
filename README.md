@@ -33,36 +33,37 @@ Ensure you have the necessary Stellar network credentials, security configuratio
 
 Soroban-Automation is organized into several key stages, each defined by a YAML file. Here’s how you can use each stage:
 
-1. **Development Environment Setup** Sets up your development environment for Soroban smart contract automation.
+1. **Development Environment Setup**:
+Sets up your development environment for Soroban smart contract automation.
    ```bash
    ansible-playbook 01_soroban_env_setup.yaml
 
-2. **Compile and Deploy Contract**:
+3. **Compile and Deploy Contract**:
 Automates the compilation and deployment of your Soroban smart contracts.
    ```bash
    ansible-playbook 02_soroban_compile_deploy_contract.yaml
 
-3. **Monitoring Contract**:
+4. **Monitoring Contract**:
 Monitors the performance and state of your deployed Soroban contracts.
    ```bash
    ansible-playbook 03_soroban_contract_monitoring.yaml
 
-4. **Managing Contract Update:**:
+5. **Managing Contract Update:**:
 Facilitates easy updates and management of your Soroban smart contracts.
    ```bash
    ansible-playbook 04_soroban_contract_update_management.yaml
 
-5. **Analyzing and Backup Contract**:
+6. **Analyzing and Backup Contract**:
 Analyzes Soroban contract data and creates backups for reliability.
    ```bash
    ansible-playbook 05_soroban_contract_data_backup.yaml
 
-6. **CI/CD Integration**:
+7. **CI/CD Integration**:
 Integrates your Soroban smart contract lifecycle with CI/CD pipelines for continuous deployment and testing.
    ```bash
    ansible-playbook 06_soroban_contract_cicd.yaml
 
-7. **FreeIPA Integration for User Authentication**:
+8. **FreeIPA Integration for User Authentication**:
 Sets up FreeIPA for user authentication and authorizes specific services for Soroban.
    ```bash
    ansible-playbook 07_freeipa_integration.yaml
