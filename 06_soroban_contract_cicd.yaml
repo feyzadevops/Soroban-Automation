@@ -1,0 +1,101 @@
+---
+- name: CI/CD for Stellar Smart Contracts
+  hosts: localhost
+  become: true
+  vars:
+    contract_path: "{{ playbook_dir }}/contract"
+    wasm_file: "{{ contract_path }}/build/contract.wasm"
+    optimized_wasm_file: "{{ contract_path }}/build/contract_optimized.wasm"
+    network_passphrase: "Test SDF Network ; September 2015"
+    testnet_source_account: "{{ lookup('env', 'TESTNET_SOURCE_ACCOUNT') }}"
+    mainnet_source_account: "{{ lookup('env', 'MAINNET_SOURCE_ACCOUNT') }}"
+    email_password: "{{ lookup('env', 'EMAIL_PASSWORD') }}"
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    email_username: "test@example.com"
+    email_to: "developer@example.com"
+  tasks:
+    - name: Checkout repository
+      git:
+        repo: 'https://github.com/your/repo.git'
+        dest: "{{ contract_path }}"
+        version: 'master'
+
+    - name: Set up Rust toolchain
+      community.general.rustup:
+        toolchain: stable
+        target: wasm32-unknown-unknown
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/usr/local/cargo/bin"
+
+    - name: Compile Contract Code
+      command: >
+        soroban contract build --source {{ contract_path }}/src/lib.rs --output {{ wasm_file }}
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Optimize Contract Code
+      command: >
+        soroban contract optimize --wasm {{ wasm_file }} --output {{ optimized_wasm_file }}
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Deploy Contract to Testnet
+      command: >
+        soroban contract deploy
+        --wasm {{ optimized_wasm_file }}
+        --network-passphrase "{{ network_passphrase }}"
+        --source-account "{{ testnet_source_account }}"
+        --rpc-url https://soroban-testnet.stellar.org
+        --network testnet
+      register: deploy_testnet_output
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Monitor Testnet Events
+      command: >
+        soroban events --id {{ deploy_testnet_output.stdout }} --start-ledger 123456 --count 10 --output json
+      register: testnet_events
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Notify Developers on Testnet Deployment
+      mail:
+        host: "{{ smtp_host }}"
+        port: "{{ smtp_port }}"
+        username: "{{ email_username }}"
+        password: "{{ email_password }}"
+        to: "{{ email_to }}"
+        subject: "Smart Contract Deployed to Testnet"
+        body: "The smart contract has been successfully deployed to the testnet environment."
+      when: deploy_testnet_output.stdout is defined
+
+    - name: Deploy Contract to Mainnet
+      command: >
+        soroban contract deploy
+        --wasm {{ optimized_wasm_file }}
+        --network-passphrase "{{ network_passphrase }}"
+        --source-account "{{ mainnet_source_account }}"
+        --rpc-url https://soroban-mainnet.stellar.org
+        --network mainnet
+      register: deploy_mainnet_output
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Monitor Mainnet Events
+      command: >
+        soroban events --id {{ deploy_mainnet_output.stdout }} --start-ledger 123456 --count 10 --output json
+      register: mainnet_events
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Notify Developers on Mainnet Deployment
+      mail:
+        host: "{{ smtp_host }}"
+        port: "{{ smtp_port }}"
+        username: "{{ email_username }}"
+        password: "{{ email_password }}"
+        to: "{{ email_to }}"
+        subject: "Smart Contract Deployed to Mainnet"
+        body: "The smart contract has been successfully deployed to the mainnet environment."
+      when: deploy_mainnet_output.stdout is defined
