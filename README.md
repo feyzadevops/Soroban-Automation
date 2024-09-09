@@ -82,6 +82,11 @@ To adapt **Soroban-Automation** to your specific requirements:
 - **Extend Functionality**: You have the flexibility to introduce new stages by creating additional Ansible playbooks, enhancing the capabilities of **Soroban-Automation**.
 - **Use Environment Variables**: Securely manage sensitive data such as Stellar network credentials and pfSense configuration by leveraging environment variables to streamline the process.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
 
 
 
