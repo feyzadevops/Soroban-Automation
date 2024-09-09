@@ -34,42 +34,42 @@ Ensure you have the necessary Stellar network credentials, security configuratio
 Soroban-Automation is organized into several key stages, each defined by a YAML file. Here’s how you can use each stage:
 
 1. **Development Environment Setup**:
-Sets up your development environment for Soroban smart contract automation.
+Prepares and configures your environment for Soroban smart contract automation.
    ```bash
    ansible-playbook 01_soroban_env_setup.yaml
 
-3. **Compile and Deploy Contract**:
-Automates the compilation and deployment of your Soroban smart contracts.
+2. **Compile and Deploy Contract**:
+Handles the automatic compilation and deployment of Soroban smart contracts to the Stellar network.
    ```bash
    ansible-playbook 02_soroban_compile_deploy_contract.yaml
 
-4. **Monitoring Contract**:
-Monitors the performance and state of your deployed Soroban contracts.
+3. **Monitor Smart Contracts**:
+Continuously track the state and performance metrics of your deployed Soroban contracts.
    ```bash
    ansible-playbook 03_soroban_contract_monitoring.yaml
 
-5. **Managing Contract Update:**:
-Facilitates easy updates and management of your Soroban smart contracts.
+4. **Managing Contract Update:**:
+Streamlines the process of updating and managing Soroban contracts with ease.
    ```bash
    ansible-playbook 04_soroban_contract_update_management.yaml
 
-6. **Analyzing and Backup Contract**:
-Analyzes Soroban contract data and creates backups for reliability.
+5. **Analyze and Backup Contract Data**:
+Gathers detailed insights and ensures secure backup of Soroban contract data.
    ```bash
    ansible-playbook 05_soroban_contract_data_backup.yaml
 
-7. **CI/CD Integration**:
-Integrates your Soroban smart contract lifecycle with CI/CD pipelines for continuous deployment and testing.
+6. **CI/CD Pipeline Integration**:
+Seamlessly integrate your contract lifecycle with CI/CD pipelines for automated deployment and testing.
    ```bash
    ansible-playbook 06_soroban_contract_cicd.yaml
 
-8. **FreeIPA Integration for User Authentication**:
-Sets up FreeIPA for user authentication and authorizes specific services for Soroban.
+7. **FreeIPA Authentication Integration**:
+Configures FreeIPA for secure user authentication and authorizes specific services related to Soroban.
    ```bash
    ansible-playbook 07_freeipa_integration.yaml
 
-9. **pfSense with Suricata and Snort for Network Security**:
-Configures pfSense firewall with Suricata and Snort for intrusion detection and network security in your infrastructure.
+9. **pfSense with Suricata and Snort for Security**:
+Sets up pfSense with Suricata and Snort for monitoring, intrusion detection, and enhanced security of your infrastructure.
    ```bash
    ansible-playbook 08_pfsense_snort_suricata_security.yaml
 
