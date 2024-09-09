@@ -48,7 +48,7 @@ Continuously track the state and performance metrics of your deployed Soroban co
    ```bash
    ansible-playbook 03_soroban_contract_monitoring.yaml
 
-4. **Managing Contract Update:**:
+4. **Managing Contract Update**:
 Streamlines the process of updating and managing Soroban contracts with ease.
    ```bash
    ansible-playbook 04_soroban_contract_update_management.yaml
@@ -76,11 +76,12 @@ Sets up pfSense with Suricata and Snort for monitoring, intrusion detection, and
 
 ## Configuration
 
-To customize **Soroban-Automation** for your specific needs:
+To adapt **Soroban-Automation** to your specific requirements:
 
-- **Edit YAML Files**: Each YAML file can be modified to suit your environment and contract requirements. Look for variables at the top of each file and adjust as needed.
-- **Add New Stages**: You can add new Ansible playbooks to extend the functionality of **Soroban-Automation**.
-- **Environment Variables**: Use environment variables to manage sensitive data like Stellar network credentials and pfSense configurations.
+- **Modify YAML Files**: Every YAML file can be customized to match your environment and smart contract needs. You’ll find variables at the top of each file, which you can adjust to tailor the configurations.
+- **Extend Functionality**: You have the flexibility to introduce new stages by creating additional Ansible playbooks, enhancing the capabilities of **Soroban-Automation**.
+- **Use Environment Variables**: Securely manage sensitive data such as Stellar network credentials and pfSense configuration by leveraging environment variables to streamline the process.
+
 
 
 
