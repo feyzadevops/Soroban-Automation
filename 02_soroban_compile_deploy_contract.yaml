@@ -1,0 +1,64 @@
+---
+- name: Build, Test, and Deploy Soroban Smart Contract
+  hosts: localhost
+  become: true
+  vars:
+    contract_path: "{{ playbook_dir }}/contract"
+    wasm_file: "{{ contract_path }}/target/wasm32-unknown-unknown/release/hello_world.wasm"
+    network_passphrase: "Test SDF Network ; September 2015"
+    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    rpc_url: "https://soroban-testnet.stellar.org"
+    network: "testnet"
+  tasks:
+    - name: Install Rust if missing
+      shell: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      args:
+        executable: /bin/bash
+      when: "'rustup' not in ansible_facts['pkg_mgr']"
+
+    - name: Ensure wasm32-unknown-unknown target is installed
+      command: rustup target add wasm32-unknown-unknown
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Run Soroban contract init
+      command: soroban contract init "{{ playbook_dir }}/contract"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Build the smart contract
+      command: soroban contract build
+      args:
+        chdir: "{{ playbook_dir }}/contract"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Run contract tests
+      command: cargo test
+      args:
+        chdir: contract/
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Check if WASM file exists
+      stat:
+        path: "{{ wasm_file }}"
+      register: wasm_file_stat
+
+    - name: Deploy smart contract
+      command: >
+        soroban contract deploy
+        --wasm {{ wasm_file }}
+        --network-passphrase "{{ network_passphrase }}"
+        --source-account "{{ source_account }}"
+        --rpc-url {{ rpc_url }}
+        --network {{ network }}
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+      when: wasm_file_stat.stat.exists
+
+  handlers:
+    - name: Notify on WASM file missing
+      debug:
+        msg: "The WASM file was not found at {{ wasm_file }}. Please ensure the contract was built successfully."
+
