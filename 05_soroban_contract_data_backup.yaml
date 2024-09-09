@@ -1,0 +1,52 @@
+---
+- name: Analyze, Backup, and Restore Soroban Contract Data
+  hosts: localhost
+  become: true
+  vars:
+    contract_file: "my_contract_optimized.wasm"
+    entry_id: "your_entry_id_here"
+    report_file: "contract_report.txt"
+    network_passphrase: "Test SDF Network ; September 2015"
+    rpc_url: "https://soroban-testnet.stellar.org"
+    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    network: "testnet"
+
+  tasks:
+    - name: Get contract ID
+      command: soroban contract id --contract {{ contract_file }}
+      register: contract_id
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Read contract data
+      command: >
+        soroban contract read --contract {{ contract_id.stdout }}
+        --entry {{ entry_id }}
+      register: entry_value
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Generate report from contract data
+      command: >
+        echo "Contract data: {{ entry_value.stdout }}" > {{ report_file }}
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Backup contract data
+      command: >
+        soroban contract read --contract {{ contract_id.stdout }}
+        --entry {{ entry_id }}
+      register: backup_data
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Print backup data
+      debug:
+        msg: "Backup data is {{ backup_data.stdout }}"
+
+    - name: Restore contract data
+      command: >
+        soroban contract restore --contract {{ contract_id.stdout }}
+        --entry {{ entry_id }} --value "{{ backup_data.stdout }}"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
