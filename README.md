@@ -33,8 +33,7 @@ Ensure you have the necessary Stellar network credentials, security configuratio
 
 Soroban-Automation is organized into several key stages, each defined by a YAML file. Here’s how you can use each stage:
 
-1. **Development Environment Setup**:
-Sets up your development environment for Soroban smart contract automation.
+1. **Development Environment Setup** Sets up your development environment for Soroban smart contract automation.
    ```bash
    ansible-playbook 01_soroban_env_setup.yaml
 
