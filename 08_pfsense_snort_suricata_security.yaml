@@ -1,0 +1,47 @@
+---
+- name: Configure pfSense with Suricata and Snort
+  hosts: localhost
+  become: true
+  vars:
+    suricata_conf: "/usr/local/etc/suricata/suricata.yaml"
+    snort_conf: "/usr/local/etc/snort/snort.conf"
+  tasks:
+    - name: Ensure pfSense is up-to-date
+      ansible.builtin.shell: pkg upgrade -y
+      ignore_errors: yes
+
+    - name: Install Suricata
+      ansible.builtin.shell: pkg install -y suricata
+
+    - name: Configure Suricata
+      ansible.builtin.shell: >
+        /usr/local/bin/suricata-update --suricata-conf={{ suricata_conf }}
+      args:
+        creates: "{{ suricata_conf }}"
+
+    - name: Install Snort
+      ansible.builtin.shell: pkg install -y snort
+
+    - name: Configure Snort for Intrusion Detection
+      ansible.builtin.template:
+        src: templates/snort/snort.conf.j2
+        dest: "{{ snort_conf }}"
+
+    - name: Ensure Suricata and Snort services are enabled
+      ansible.builtin.shell: |
+        sysrc suricata_enable="YES"
+        sysrc snort_enable="YES"
+
+    - name: Restart Suricata and Snort services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: restarted
+      loop:
+        - suricata
+        - snort
+
+    - name: Verify Suricata and Snort status
+      ansible.builtin.shell: service {{ item }} status
+      loop:
+        - suricata
+        - snort
