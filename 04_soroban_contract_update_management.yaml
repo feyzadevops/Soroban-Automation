@@ -1,0 +1,47 @@
+---
+- name: Manage Soroban contract updates
+  hosts: localhost
+  become: true
+  vars:
+    contract_file: "my_contract_optimized.wasm"
+    new_source: "/path/to/new/source"
+    network_passphrase: "Test SDF Network ; September 2015"
+    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    rpc_url: "https://soroban-testnet.stellar.org"
+    network: "testnet"
+
+  tasks:
+    - name: Get contract ID
+      command: soroban contract id --contract {{ contract_file }}
+      register: contract_id
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Backup current contract
+      command: >
+        soroban contract fetch --contract {{ contract_id.stdout }}
+        --output old_contract.wasm
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Build new contract
+      command: >
+        soroban contract build --source {{ new_source }} --output new_contract.wasm
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Optimize new contract
+      command: >
+        soroban contract optimize --wasm new_contract.wasm --output new_contract_optimized.wasm
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+
+    - name: Deploy new contract
+      command: >
+        soroban contract deploy --wasm new_contract_optimized.wasm
+        --network-passphrase "{{ network_passphrase }}"
+        --source-account "{{ source_account }}"
+        --rpc-url "{{ rpc_url }}"
+        --network "{{ network }}"
+      environment:
+        PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
