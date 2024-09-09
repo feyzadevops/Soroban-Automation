@@ -64,11 +64,12 @@ Integrates your Soroban smart contract lifecycle with CI/CD pipelines for contin
    ansible-playbook 06_soroban_contract_cicd.yaml
 
 7. **FreeIPA Integration for User Authentication**:
+
 Sets up FreeIPA for user authentication and authorizes specific services for Soroban.
    ```bash
    ansible-playbook 07_freeipa_integration.yaml
 
-8. **pfSense with Suricata and Snort for Network Security**:
+9. **pfSense with Suricata and Snort for Network Security**:
 Configures pfSense firewall with Suricata and Snort for intrusion detection and network security in your infrastructure.
    ```bash
    ansible-playbook 08_pfsense_snort_suricata_security.yaml
