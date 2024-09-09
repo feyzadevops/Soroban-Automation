@@ -1,0 +1,73 @@
+---
+- name: Install and Configure FreeIPA Server
+  hosts: localhost
+  become: true
+  vars:
+    ipa_domain: "example.com"
+    ipa_realm: "EXAMPLE.COM"
+    ds_password: "Secret123"
+    admin_password: "Admin123"
+  tasks:
+    - name: Detect package manager
+      ansible.builtin.shell: |
+        if command -v apt >/dev/null; then
+          echo "apt"
+        elif command -v yum >/dev/null; then
+          echo "yum"
+        else
+          echo "unsupported"
+      register: package_manager
+
+    - name: Fail if package manager is unsupported
+      ansible.builtin.fail:
+        msg: "Unsupported package manager"
+      when: package_manager.stdout == "unsupported"
+
+    - name: Install FreeIPA packages (Debian-based)
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - freeipa-server
+        - freeipa-server-dns
+        - freeipa-client
+      when: package_manager.stdout == "apt"
+
+    - name: Install FreeIPA packages (RedHat-based)
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - ipa-server
+        - ipa-server-dns
+        - ipa-client
+      when: package_manager.stdout == "yum"
+
+    - name: Set hostname for FreeIPA
+      ansible.builtin.shell: hostnamectl set-hostname ipa.{{ ipa_domain }}
+
+    - name: Initialize FreeIPA server
+      ansible.builtin.shell: |
+        ipa-server-install --domain={{ ipa_domain }}
+        --realm={{ ipa_realm }}
+        --ds-password={{ ds_password }}
+        --admin-password={{ admin_password }}
+        --setup-dns
+        --auto-reverse --unattended
+
+    - name: Add Soroban service accounts
+      ansible.builtin.shell: |
+        ipa service-add soroban-service@{{ ipa_domain }}
+
+    - name: Configure Soroban service permissions
+      ansible.builtin.shell: |
+        ipa privilege-add soroban-privilege --desc "Permissions for Soroban services"
+    
+    - name: Grant access to Soroban services
+      ansible.builtin.shell: |
+        ipa role-add-member soroban-service --users soroban_user
+
+    - name: Restart FreeIPA services
+      ansible.builtin.service:
+        name: ipa
+        state: restarted
