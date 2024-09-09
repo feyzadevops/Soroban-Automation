@@ -68,10 +68,19 @@ Sets up FreeIPA for user authentication and authorizes specific services for Sor
    ```bash
    ansible-playbook 07_freeipa_integration.yaml
 
-7. **pfSense with Suricata and Snort for Network Security**:
+8. **pfSense with Suricata and Snort for Network Security**:
 Configures pfSense firewall with Suricata and Snort for intrusion detection and network security in your infrastructure.
    ```bash
    ansible-playbook 08_pfsense_snort_suricata_security.yaml
+
+
+## Configuration
+
+To customize **Soroban-Automation** for your specific needs:
+
+- **Edit YAML Files**: Each YAML file can be modified to suit your environment and contract requirements. Look for variables at the top of each file and adjust as needed.
+- **Add New Stages**: You can add new Ansible playbooks to extend the functionality of **Soroban-Automation**.
+- **Environment Variables**: Use environment variables to manage sensitive data like Stellar network credentials and pfSense configurations.
 
 
 
