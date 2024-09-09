@@ -1,9 +1,9 @@
 # Soroban-Automation
 
 ## Overview
-**Soroban-Automation** is a comprehensive automation framework designed to simplify and streamline the lifecycle management of smart contracts on the Stellar blockchain using Ansible. Whether you're a seasoned developer or new to Soroban and smart contracts, Soroban-Automation provides an intuitive and efficient platform to automate the setup, deployment, monitoring, management, security, and infrastructure of your smart contracts.
+**Soroban-Automation** Soroban-Automation is a versatile automation platform built to optimize and simplify the complete lifecycle management of smart contracts on the Stellar blockchain through the use of Ansible. Whether you're an experienced developer or just beginning with Soroban and smart contracts, Soroban-Automation offers a user-friendly and efficient framework to automate tasks such as setting up, deploying, monitoring, managing, and securing your smart contracts.
 
-In addition to managing smart contracts, Soroban-Automation integrates security solutions like **FreeIPA** for user authentication and **pfSense** with **Suricata** and **Snort** for network security.
+Moreover, Soroban-Automation includes advanced security integrations, such as FreeIPA for user authentication and pfSense with Suricata and Snort for enhanced network security, offering a holistic approach to both contract management and infrastructure protection.
 
 ## Features
 - **Automated Environment Setup**: Quickly configure your development environment for smart contract and security management.
