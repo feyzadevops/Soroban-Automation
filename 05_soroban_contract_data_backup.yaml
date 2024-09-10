@@ -8,7 +8,7 @@
     report_file: "contract_report.txt"
     network_passphrase: "Test SDF Network ; September 2015"
     rpc_url: "https://soroban-testnet.stellar.org"
-    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    source_account: "SB7ALTEUMTFDFY673CF43IGJY7WEVVU4HV5CMXI74PNFWMSB3WH3WBF7"
     network: "testnet"
 
   tasks:
