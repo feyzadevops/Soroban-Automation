@@ -6,7 +6,7 @@
     contract_id: "CA45KN3KFTHBMSMJVFCPRUJXVNCGMR63S2QKHF7OPT7Q2EO64HWSC6JS"
     rpc_url: "https://soroban-testnet.stellar.org"
     network_passphrase: "Test SDF Network ; September 2015"
-    source_account: "SCSKTUTW6IRP77YUW5KMGWTYIC5MBWM2MBIJ2LAUQTRPLBG5CTXBW67K"
+    source_account: "SB7ALTEUMTFDFY673CF43IGJY7WEVVU4HV5CMXI74PNFWMSB3WH3WBF7"
     log_files:
       - contract_status.log
       - contract_start_ledger.log
